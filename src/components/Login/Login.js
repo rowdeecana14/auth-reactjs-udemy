@@ -1,84 +1,22 @@
-import React, { useState, useEffect, useReducer } from "react";
+import { useReducer, useContext, useEffect } from "react";
 
+import AuthContext from "../../store/AuthContext";
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
-
-const ACTIONS = {
-  EMAIL_INPUT: "email-input",
-  EMAIL_BLUR: "email-blur",
-  PASSWORD_INPUT: "password-input",
-  PASSWORD_BLUR: "password-blur",
-};
-
-function formReducer(state, action) {
-  switch (action.type) {
-    case ACTIONS.EMAIL_INPUT: {
-      const updated = { ...state };
-      updated.fields.email.is_valid = action.value.includes("@");
-      updated.fields.email.value = action.value;
-      updated.is_form_valid = updated.fields.email.is_valid  && updated.fields.password.is_valid ;
-
-      return updated;
-    }
-    case ACTIONS.EMAIL_BLUR: {
-      const updated = { ...state };
-      updated.fields.email.is_valid = updated.fields.email.value.includes("@");
-      updated.is_form_valid = updated.fields.email.is_valid  && updated.fields.password.is_valid;
-
-      return updated;
-    }
-    case ACTIONS.PASSWORD_INPUT: {
-      const updated = { ...state };
-      updated.fields.password.is_valid = action.value.trim().length > 6;
-      updated.fields.password.value = action.value;
-      updated.is_form_valid = updated.fields.email.is_valid  && updated.fields.password.is_valid ;
-
-      return updated;
-    }
-    case ACTIONS.PASSWORD_BLUR: {
-      const updated = { ...state };
-      updated.fields.password.is_valid = updated.fields.password.value.trim().length > 6;
-      updated.is_form_valid = updated.fields.email.is_valid  && updated.fields.password.is_valid ;
-
-      return updated;
-    }
-    default:{
-      return state;
-    }
-  }
-}
+import { INITIAL, ACTIONS, formReducer } from "../../reducers/LoginReducer";
 
 function Login(props) {
-  const [form, dispatchForm] = useReducer(formReducer, {
-    is_form_valid: false,
-    fields: {
-      email: {
-        value: "",
-        is_valid: null,
-      },
-      password: {
-        value: "",
-        is_valid: null,
-      },
-    },
-  });
-
-  // useEffect(() => {
-  //   const time = setTimeout(() => {
-  //     validateEmail();
-  //     validatePassword();
-  //   }, 500);
-
-  //   return () => {
-  //     clearTimeout(time);
-  //   };
-  // }, [form]);
+  const context = useContext(AuthContext);
+  const [form, dispatchForm] = useReducer(formReducer, INITIAL);
 
   function onsubmitLogin(event) {
     event.preventDefault();
-    props.login(form.fields.email.value, form.fields.password.value);
+    context.login(form.fields.email.value, form.fields.password.value);
   }
+
+  // apply useEffect for debounce validations
+  // email and password
 
   return (
     <Card className={classes.login}>
