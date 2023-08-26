@@ -8,7 +8,7 @@ export const ACTIONS = {
 };
 
 export const INITIAL = {
-  is_form_valid: null,
+  is_form_valid: false,
   fields: {
     email: {
       value: "",
@@ -25,7 +25,10 @@ export function formReducer(state, action) {
   switch (action.type) {
     case ACTIONS.EMAIL_INPUT: {
       const updated = { ...state };
+      updated.fields.email.is_valid = action.value.includes("@");
       updated.fields.email.value = action.value;
+      updated.is_form_valid =
+        updated.fields.email.is_valid && updated.fields.password.is_valid;
 
       return updated;
     }
@@ -39,7 +42,10 @@ export function formReducer(state, action) {
     }
     case ACTIONS.PASSWORD_INPUT: {
       const updated = { ...state };
+      updated.fields.password.is_valid = action.value.trim().length > 6;
       updated.fields.password.value = action.value;
+      updated.is_form_valid =
+        updated.fields.email.is_valid && updated.fields.password.is_valid;
 
       return updated;
     }
@@ -52,13 +58,8 @@ export function formReducer(state, action) {
 
       return updated;
     }
-    case ACTIONS.EMAIL_VALIDATE: {
-        console.log('VALIDATE')
-        const updated = { ...state };
-        updated.fields.email.is_valid = updated.fields.email.value.includes("@");
-        updated.is_form_valid = updated.fields.email.is_valid && updated.fields.password.is_valid;
-
-        return updated;
+    case ACTIONS.PASSWORD_VALIDATE: {
+        
     }
     default: {
       return state;

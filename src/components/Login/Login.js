@@ -1,4 +1,4 @@
-import { useReducer, useContext, useEffect } from "react";
+import { useReducer, useContext, useEffect, useState } from "react";
 
 import AuthContext from "../../store/AuthContext";
 import Card from "../UI/Card/Card";
@@ -15,8 +15,23 @@ function Login(props) {
     context.login(form.fields.email.value, form.fields.password.value);
   }
 
-  // apply useEffect for debounce validations
-  // email and password
+  function onchangeEmail(value) {
+    dispatchForm({
+      type: ACTIONS.EMAIL_INPUT,
+      value: value,
+    });
+  }
+
+  // useEffect(() => {
+  //   const time = setTimeout(() => {
+  //     dispatchForm({ type: ACTIONS.VALIDATE });
+  //   }, 500);
+
+  //   return ()=> {
+  //     clearTimeout(time);
+  //   };
+  // }, [email, password]);
+
 
   return (
     <Card className={classes.login}>
@@ -32,12 +47,9 @@ function Login(props) {
             id="email"
             value={form.fields.email.value}
             onChange={(event) =>
-              dispatchForm({
-                type: ACTIONS.EMAIL_INPUT,
-                value: event.target.value,
-              })
+              onchangeEmail(event.target.value)
             }
-            onBlur={() => dispatchForm({ type: ACTIONS.EMAIL_BLUR })}
+            onBlur={() => debounce(dispatchForm({ type: ACTIONS.EMAIL_BLUR }))}
           />
         </div>
         <div
